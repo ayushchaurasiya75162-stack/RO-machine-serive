@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RO Service Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="dashboard-body">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-tint"></i>
+            <span>RO Manager</span>
+        </div>
+        <nav>
+            <a href="#" onclick="showDashboard()" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#" onclick="showCustomers()"><i class="fas fa-users"></i> Customers</a>
+            <a href="#" onclick="showPayments()"><i class="fas fa-rupee-sign"></i> Payments</a>
+            <a href="#" onclick="showComplaints()"><i class="fas fa-exclamation-triangle"></i> Complaints</a>
+            <a href="#" onclick="showReports()"><i class="fas fa-chart-bar"></i> Reports</a>
+            <a href="#" onclick="showSettings()"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+        <div class="logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header>
+            <h2 id="pageTitle">Dashboard</h2>
+            <div class="user-info">
+                <span id="currentUser"></span>
+                <i class="fas fa-bell notifications"></i>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <div class="stats-grid" id="dashboardStats">
+            <div class="stat-card paid">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalPaid">0</h3>
+                    <p>Paid Customers</p>
+                </div>
+            </div>
+            <div class="stat-card unpaid">
+                <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalUnpaid">0</h3>
+                    <p>Pending Payments</p>
+                </div>
+            </div>
+            <div class="stat-card total">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalCustomers">0</h3>
+                    <p>Total Customers</p>
+                </div>
+            </div>
+            <div class="stat-card revenue">
+                <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalRevenue">₹0</h3>
+                    <p>Monthly Revenue</p>
+                </div>
+            </div>
+            <div class="stat-card complaints">
+                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info">
+                    <h3 id="totalComplaints">0</h3>
+                    <p>Pending Complaints</p>
+                </div>
+            </div>
+            <div class="stat-card service">
+                <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                <div class="stat-info">
+                    <h3 id="nextService">0</h3>
+                    <p>Due for Service</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Table -->
+        <div id="customersSection" class="table-section hidden">
+            <div class="table-header">
+                <h3>All Customers</h3>
+                <button class="btn-primary" onclick="showAddCustomerModal()">
+                    <i class="fas fa-plus"></i> Add Customer
+                </button>
+            </div>
+            <div class="table-container">
+                <table id="customersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Payment Status</th>
+                            <th>Next Service</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Payments Section -->
+        <div id="paymentsSection" class="table-section hidden">
+            <div class="table-header">
+                <h3>Payment Status</h3>
+                <button class="btn-success" onclick="markAllPaid()">
+                    Mark All Paid
+                </button>
+            </div>
+            <table id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Month</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date Paid</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Complaints Section -->
+        <div id="complaintsSection" class="table-section hidden">
+            <div class="table-header">
+                <h3>Customer Complaints</h3>
+                <button class="btn-warning" onclick="showAddComplaintModal()">
+                    <i class="fas fa-plus"></i> New Complaint
+                </button>
+            </div>
+            <table id="complaintsTable">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Complaint</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reportsSection" class="hidden">
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h4>Monthly Summary</h4>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                <div class="report-card">
+                    <h4>Payment Status</h4>
+                    <canvas id="paymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Customer</h2>
+            <form id="customerForm">
+                <div class="input-group">
+                    <input type="text" id="customerName" placeholder="Customer Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="tel" id="customerPhone" placeholder="Phone Number" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="customerAddress" placeholder="Address" required>
+                </div>
+                <div class="input-group">
+                    <input type="date" id="installDate">
+                </div>
+                <button type="submit">Add Customer</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
